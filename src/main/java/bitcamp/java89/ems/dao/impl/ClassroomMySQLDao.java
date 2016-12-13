@@ -76,6 +76,33 @@ public class ClassroomMySQLDao implements ClassroomDao{
     return list;
   }
   
+  public Classroom getDetail(int roomNo) throws Exception {
+    Connection con = ds.getConnection();
+    Classroom classroom = null;
+    try (
+        PreparedStatement stmt = con.prepareStatement(
+            "select roomno, capa, classname, classtime, projector, locker from ex_classrooms where roomno=?");
+        )
+    {
+      stmt.setInt(1, roomNo);;
+      ResultSet rs = stmt.executeQuery();
+      
+      if (rs.next()) {
+        classroom = new Classroom();
+        classroom.setRoomNo(rs.getInt("roomno"));
+        classroom.setCapacity(rs.getInt("capa"));
+        classroom.setClassName(rs.getString("classname"));
+        classroom.setClassTime(rs.getString("classtime"));
+        classroom.setProjector(rs.getBoolean("projector"));
+        classroom.setLocker(rs.getBoolean("locker"));
+      }
+      rs.close();
+    } finally {
+      ds.returnConnection(con);
+    }
+    return classroom;
+  }
+  
   public void insert(Classroom classroom) throws Exception {
     Connection con = ds.getConnection();
     try (

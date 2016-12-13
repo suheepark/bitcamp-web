@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>강의실관리-입력폼</title>
+</head>
+<body>
+<h1>강의실 등록폼</h1>
+
+<form action='add' method='POST'>
+<table border='1'>
+<tr><th>강의실 번호</th><td><input name='roomno' type='text' placeholder='예) 301'></td></tr>
+<tr><th>수용인원</th><td><input name='capacity' type='text' placeholder='예) 30'></td></tr>
+<tr><th>강의명</th><td><input name='classname' type='text' placeholder='예) Java&DB 전문가 과정'></td></tr>
+<tr><th>강의시간</th><td><input name='classtime' type='text' placeholder='예) 09~18'></td></tr>
+<tr><th>프로젝터</th><td><input name='projector' type='radio' value='true'>유
+                              <input name='projector' type='radio' value='false' checked>무</td></tr>
+<tr><th>사물함</th><td><input name='locker' type='radio' value='true'>유
+                              <input name='locker' type='radio' value='false' checked>무</td></tr>
+</table>
+<button type='submit'>등록</button>
+<a href='list'>목록</a>
+</form>
+
+</body>
+</html>

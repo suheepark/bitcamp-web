@@ -2,7 +2,6 @@ package bitcamp.java89.ems.servlet;
 
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.util.ArrayList;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
@@ -21,26 +20,51 @@ public class ClassroomViewServlet extends HttpServlet {
 
   @Override
   protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    
+    response.setContentType("text/html;charset=UTF-8");
+    PrintWriter out = response.getWriter();
+    
+    out.println("<!DOCTYPE html>");
+    out.println("<html>");
+    out.println("<head>");
+    out.println("<meta charset='UTF-8'>");
+    out.println("<title>강의실관리-상세정보</title>");
+    out.println("</head>");
+    out.println("<body>");
+    out.println("<h1>강의실 정보</h1>");
+    out.println("<form action='update' method='POST'>");
+    
     try {
+      int roomno = Integer.parseInt(request.getParameter("roomno"));
       ClassroomMySQLDao classroomDao = ClassroomMySQLDao.getInstance();
-      ArrayList<Classroom> list = classroomDao.getList();
-      response.setContentType("text/plain;charset=UTF-8");
-      PrintWriter out = response.getWriter();
+      Classroom classroom = classroomDao.getDetail(roomno);
       
-      for (Classroom classroom : list) {
-        if (classroom.getRoomNo() == Integer.parseInt(request.getParameter("roomno"))) {
-          out.printf("강의실 번호 : %d\n", classroom.getRoomNo());
-          out.printf("수용인원 : %d\n", classroom.getCapacity());
-          out.printf("강의명 : %s\n", classroom.getClassName());
-          out.printf("강의 시간 : %s\n", classroom.getClassTime());
-          out.printf("프로젝터 유무 : %s\n", (classroom.isProjector()) ? "YES" : "NO");
-          out.printf("사물함 유무 : %s\n", (classroom.isLocker()) ? "YES" : "NO");
-          out.println("-----------------------");
-        }
+      if (classroom == null) {
+        throw new Exception("해당 강의실번호의 정보가 없습니다.");
       }
+      
+      out.println("<table border='1'>");
+      out.printf("<tr><th>강의실번호</th><td><input name='roomno' type='text' value='%s' readOnly></td></tr>\n", classroom.getRoomNo());
+      out.printf("<tr><th>수용인원</th><td><input name='capacity' type='text' value='%s'></td></tr>\n", classroom.getCapacity());
+      out.printf("<tr><th>강의명</th><td><input name='classname' type='text' value='%s'></td></tr>\n", classroom.getClassName());
+      out.printf("<tr><th>강의시간</th><td><input name='classtime' type='text' value='%s'></td></tr>\n", classroom.getClassTime());
+      out.printf("<tr><th>프로젝터</th><td><input name='projector' type='radio' value='true' %s>유"
+          + "<input name='projector' type='radio' value='false' %s>무</td></tr>\n",
+          (classroom.isProjector() ? "checked":""), (classroom.isProjector() ? "":"checked"));
+      out.printf("<tr><th>사물함</th><td><input name='locker' type='radio' value='true' %s>유"
+          + "<input name='locker' type='radio' value='false' %s>무</td></tr>\n",
+          (classroom.isLocker()? "checked":""), (classroom.isLocker()? "":"checked"));
+      out.println("</table>");
+      out.println("<button type='submit'>변경</button>");
+      out.printf(" <a href='delete?roomno=%d'>삭제</a>\n", classroom.getRoomNo());
+      
     } catch (Exception e) {
-      throw new ServletException(e);
+      out.printf("<p>%s</p>\n", e.getMessage());
     }
+    out.println(" <a href='list'>목록</a>");
+    out.println("</form>");
+    out.println("</body>");
+    out.println("</html>");
   }
   
 }

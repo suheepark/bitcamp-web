@@ -2,7 +2,6 @@ package bitcamp.java89.ems.servlet;
 
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.util.ArrayList;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
@@ -20,26 +19,47 @@ public class ClassroomUpdateServlet extends HttpServlet {
   ServletConfig config;
 
   @Override
-  protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+  protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    
+    request.setCharacterEncoding("UTF-8");
+    response.setHeader("Refresh", "1;url=list");
+    
+    response.setContentType("text/html;charset=UTF-8");
+    PrintWriter out = response.getWriter();
+    
+    Classroom classroom = new Classroom(); 
+    classroom.setRoomNo(Integer.parseInt(request.getParameter("roomno")));
+    classroom.setCapacity(Integer.parseInt(request.getParameter("capacity")));
+    classroom.setClassName(request.getParameter("classname"));
+    classroom.setClassTime(request.getParameter("classtime"));
+    classroom.setProjector(Boolean.parseBoolean(request.getParameter("projector")));
+    classroom.setLocker(Boolean.parseBoolean(request.getParameter("locker")));
+    
+    out.println("<!DOCTYPE html>");
+    out.println("<html>");
+    out.println("<head>");
+    out.println("<meta charset='UTF-8'>");
+    out.println("<title>강의실관리-변경</title>");
+    out.println("</head>");
+    out.println("<body>");
+    out.println("<h1>변경 결과</h1>");
+    
     try {
       ClassroomMySQLDao classroomDao = ClassroomMySQLDao.getInstance();
-      ArrayList<Classroom> list = classroomDao.getList();
-      response.setContentType("text/plain;charset=UTF-8");
-      PrintWriter out = response.getWriter();
+      int roomno = Integer.parseInt(request.getParameter("roomno"));
       
-      Classroom classroom = new Classroom(); 
-      classroom.setRoomNo(Integer.parseInt(request.getParameter("roomno")));
-      classroom.setCapacity(Integer.parseInt(request.getParameter("capacity")));
-      classroom.setClassName(request.getParameter("classname"));
-      classroom.setClassTime(request.getParameter("classtime"));
-      classroom.setProjector(Boolean.parseBoolean(request.getParameter("projector")));
-      classroom.setLocker(Boolean.parseBoolean(request.getParameter("locker")));
+      if (!classroomDao.existRoomNo(roomno)) {
+        throw new Exception("강의실 정보를 찾지 못했습니다.");
+      }
+      
       classroomDao.update(classroom);
-      out.println("변경하였습니다.");
+      out.println("<p>변경하였습니다.</p>");
       
     } catch (Exception e) {
-      throw new ServletException(e);
+      out.printf("<p>%s</p>\n", e.getMessage());
     }
+    out.println("</body>");
+    out.println("</html>");
   }
   
 }

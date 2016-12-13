@@ -24,13 +24,34 @@ public class ContactListServlet extends HttpServlet {
     try {
       ContactMySQLDao contactDao = ContactMySQLDao.getInstance();
       ArrayList<Contact> list = contactDao.getList();
-      response.setContentType("text/plain;charset=UTF-8");
+      
+      response.setContentType("text/html;charset=UTF-8");
       PrintWriter out = response.getWriter();
+      
+      out.println("<!DOCTYPE html>");
+      out.println("<html>");
+      out.println("<head>");
+      out.println("<meta charset='UTF-8'>");
+      out.println("<title>연락처관리-목록</title>");
+      out.println("</head>");
+      out.println("<body>");
+      out.println("<h1>연락처 정보</h1>");
+      out.println("<a href='form.html'>추가</a><br>");
+      out.println("<table border='1'>");
+      out.println("<tr> <!-- tr : table row / th : table column header -->");
+      out.println("<th>이름</th><th>직위</th><th>전화</th><th>이메일</th>");
+      out.println("</tr>");
+      
       for (Contact contact : list) {
-        out.printf("%s %s %s %s\n",
-        contact.getName(), contact.getPosition(),
-        contact.getTel(), contact.getEmail());
+        out.println("<tr> <!-- td : table row data -->");
+        out.printf("<td><a href='view?email=%4$s'>%s</a></td><td>%s</td><td>%s</td><td>%s</td>\n",
+            contact.getName(), contact.getPosition(), contact.getTel(), contact.getEmail());
+        out.println("</tr>");
       }
+      
+      out.println("</table>");
+      out.println("</body>");
+      out.println("</html>");
     } catch (Exception e) {
       throw new ServletException(e);
     }
